@@ -1,18 +1,26 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"log"
 	"net/http"
-	"errors"
+	"sync"
 
 	"github.com/gorilla/mux"
 )
 
-var store = make(map[string]string)
+var store = struct {
+	sync.RWMutex
+	m map[string]string
+}{m: make(map[string]string)}
 
 func Put(key string, value string) error {
-	store[key] = value
+	store.Lock()
+	store.m[key] = value
+	store.Unlock()
+
+	println(len(store.m))
 
 	return nil
 }
@@ -20,39 +28,30 @@ func Put(key string, value string) error {
 var ErrorNoSuchKey = errors.New("no such key")
 
 func Get(key string) (string, error) {
-	value, ok := store[key]
+	store.Lock()
+	value, ok := store.m[key]
+	store.Unlock()
 
 	if !ok {
 		return "", ErrorNoSuchKey
 	}
 
+	println(len(store.m))
+
 	return value, nil
 }
 
 func Delete(key string) error {
-	delete(store, key)
+	store.Lock()
+	delete(store.m, key)
+	store.Unlock()
+
+	println(len(store.m))
 
 	return nil
 }
 
-func helloMuxHandler(w http.ResponseWriter, r* http.Request) {
-	w.Write([]byte("Hello gorilla/mux\n"))
-}
-
-func ProductHandler(w http.ResponseWriter, r* http.Request) {
-	vars := mux.Vars(r)
-	w.Write([]byte(vars["key"]))
-}
-
-func ArticlesCategoryHandler(w http.ResponseWriter, r* http.Request) {
-
-}
-
-func ArticleHandler(w http.ResponseWriter, r* http.Request) {
-
-}
-
-func keyValuePutHandler (w http.ResponseWriter, r* http.Request) {
+func keyValuePutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 
@@ -63,7 +62,7 @@ func keyValuePutHandler (w http.ResponseWriter, r* http.Request) {
 		http.Error(w,
 			err.Error(),
 			http.StatusInternalServerError)
-			return
+		return
 	}
 
 	err = Put(key, string(value))
@@ -71,10 +70,23 @@ func keyValuePutHandler (w http.ResponseWriter, r* http.Request) {
 		http.Error(w,
 			err.Error(),
 			http.StatusInternalServerError)
-			return
+		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+func keyValueDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+
+	err := Delete(key)
+	if err != nil {
+		http.Error(w,
+			err.Error(),
+			http.StatusInternalServerError)
+		return
+	}
 }
 
 func keyValueGetHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,6 +106,23 @@ func keyValueGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(value))
 }
 
+func helloMuxHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello gorilla/mux\n"))
+}
+
+func ProductHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	w.Write([]byte(vars["key"]))
+}
+
+func ArticlesCategoryHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func ArticleHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func main() {
 	r := mux.NewRouter()
 
@@ -102,8 +131,9 @@ func main() {
 	r.HandleFunc("/articles/{category}/", ArticlesCategoryHandler)
 	r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler)
 
-	r.HandleFunc("/v1/{key}", keyValuePutHandler,).Methods("PUT")
-	r.HandleFunc("/v1/{key}", keyValueGetHandler,).Methods("GET")
+	r.HandleFunc("/v1/{key}", keyValuePutHandler).Methods("PUT")
+	r.HandleFunc("/v1/{key}", keyValueGetHandler).Methods("GET")
+	r.HandleFunc("/v1/{key}", keyValueDeleteHandler).Methods("DELETE")
 
 	println("Service Started. Listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
