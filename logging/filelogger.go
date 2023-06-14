@@ -1,27 +1,17 @@
-package utils
+package logging
 
 import (
 	"bufio"
 	"fmt"
+	"go-backend/api"
 	"os"
-	"text/scanner"
 )
 
-type TransactionLogger interface {
-	WriteDelete(key string)
-	WritePut(key, value string)
-	Err() <-chan error
-
-	ReadEvents() (<-chan Event, <-chan error)
-
-	Run()
-}
-
 type FileTransactionLogger struct {
-	events 			chan<- Event
-	errors 			<-chan error
-	lastSequence 	uint64
-	file 			*os.File
+	events       chan<- Event
+	errors       <-chan error
+	lastSequence uint64
+	file         *os.File
 }
 
 func (l *FileTransactionLogger) WritePut(key string, value string) {
@@ -59,7 +49,7 @@ func (l *FileTransactionLogger) Run() {
 			_, err := fmt.Fprintf(
 				l.file,
 				"%d\t%d\t%s\t%s\n",
-			l.lastSequence, e.EventType, e.Key, e.Value)
+				l.lastSequence, e.EventType, e.Key, e.Value)
 
 			if err != nil {
 				errors <- err
@@ -85,7 +75,7 @@ func (l *FileTransactionLogger) ReadEvents() (<-chan Event, <-chan error) {
 
 			if _, err := fmt.Sscanf(line, "%d\t%d\t%s\t%s",
 				&e.Sequence, &e.EventType, &e.Key, &e.Value); err != nil {
-				
+
 				outError <- fmt.Errorf("input parse error: %w", err)
 				return
 			}
@@ -109,17 +99,15 @@ func (l *FileTransactionLogger) ReadEvents() (<-chan Event, <-chan error) {
 	return outEvent, outError
 }
 
-var logger TransactionLogger
-
-func initializeTransactionLog() error {
+func InitializeFileTransactionLog() error {
 	var err error
 
-	logger, err = NewFileTransactionLogger("transaction.log")
+	Logger, err = NewFileTransactionLogger("transaction.log")
 	if err != nil {
 		return fmt.Errorf("failed to create event logger: %w", err)
 	}
 
-	events, errors := logger.ReadEvents()
+	events, errors := Logger.ReadEvents()
 	e, ok := Event{}, true
 
 	for ok && err == nil {
@@ -128,14 +116,14 @@ func initializeTransactionLog() error {
 		case e, ok = <-events:
 			switch e.EventType {
 			case EventDelete:
-				err = Delete(e.Key)
+				err = api.Delete(e.Key)
 			case EventPut:
-				err = Put(e.Key, e.Value)
+				err = api.Put(e.Key, e.Value)
 			}
 		}
 	}
 
-	logger.Run()
+	Logger.Run()
 
 	return err
 }
