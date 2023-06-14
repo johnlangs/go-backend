@@ -71,6 +71,10 @@ func KeyValueGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(value))
 }
 
+func HelloGoHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello Go!\n"))
+}
+
 func HelloMuxHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello gorilla/mux\n"))
 }

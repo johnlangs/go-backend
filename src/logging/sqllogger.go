@@ -125,7 +125,7 @@ func (l *PostgresTransactionLogger) ReadEvents() (<-chan Event, <-chan error) {
 	return outEvent, outError
 }
 
-func initializeSQLTransactionLog() error {
+func InitializeSQLTransactionLog() error {
 	var err error
 
 	var config = PostgresDBParams{
