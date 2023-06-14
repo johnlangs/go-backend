@@ -17,20 +17,6 @@ type TransactionLogger interface {
 	Run()
 }
 
-type Event struct {
-	Sequence 	uint64
-	EventType 	EventType
-	Key 		string
-	Value 		string
-}
-
-type EventType byte
-const (
-	_ 					  = iota
-	EventDelete EventType = iota
-	EventPut
-)
-
 type FileTransactionLogger struct {
 	events 			chan<- Event
 	errors 			<-chan error
@@ -43,7 +29,7 @@ func (l *FileTransactionLogger) WritePut(key string, value string) {
 }
 
 func (l *FileTransactionLogger) WriteDelete(key string) {
-	l.events <- Event{EventType: EventPut, Key: key}
+	l.events <- Event{EventType: EventDelete, Key: key}
 }
 
 func (l *FileTransactionLogger) Err() <-chan error {
