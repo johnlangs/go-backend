@@ -20,7 +20,7 @@ func main() {
 	r.HandleFunc("/v1/{key}", handlers.KeyValueGetHandler).Methods("GET")
 	r.HandleFunc("/v1/{key}", handlers.KeyValueDeleteHandler).Methods("DELETE")
 
-	println("Service Started. Listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	println("Service Started. Listening on :80")
+	log.Fatal(http.ListenAndServe(":80", r))
 	//log.Fatal(http.ListenAndServeTLS(":8080", "cert.pem", "key.pem", nil))
 }
