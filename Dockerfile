@@ -2,7 +2,7 @@
 #
 FROM golang:1.20 as build
 # Copy the source files from the host
-COPY . /src
+COPY . /
 # Set the working directory to the same place we copied the code
 WORKDIR /src
 # Build the binary!
@@ -15,6 +15,8 @@ FROM scratch
 COPY --from=build /src/kvs .
 # If you're using TLS, copy the .pem files too
 COPY --from=build /src/*.pem .
+# Copy config file
+COPY --from=build /src/config.toml .
 # Tell Docker we'll be using port 8080
 EXPOSE 8080
 # Tell Docker to execute this command on a "docker run"
