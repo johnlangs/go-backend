@@ -21,7 +21,10 @@ func main() {
 	r.HandleFunc("/v1/{key}", handlers.KeyValueGetHandler).Methods("GET")
 	r.HandleFunc("/v1/{key}", handlers.KeyValueDeleteHandler).Methods("DELETE")
 
+	if port == ":443" {
+		log.Fatal(http.ListenAndServeTLS(":8080", "cert.pem", "key.pem", r))
+	} else {
+		log.Fatal(http.ListenAndServe(port, r))
+	}
 	println("Service Started. Listening on " + port)
-	log.Fatal(http.ListenAndServe(port, r))
-	//log.Fatal(http.ListenAndServeTLS(":8080", "cert.pem", "key.pem", nil))
 }

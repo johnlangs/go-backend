@@ -18,6 +18,6 @@ COPY --from=build /src/*.pem .
 # Copy config file
 COPY --from=build /src/config.toml .
 # Tell Docker we'll be using port 8080
-EXPOSE 8080
+EXPOSE 80
 # Tell Docker to execute this command on a "docker run"
 CMD ["/kvs"]
