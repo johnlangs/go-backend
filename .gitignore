@@ -1,6 +1,3 @@
-/utils/fundamentals.go
-/utils/fundamentals
-/.vscode
-transaction.log
-go-backend
-dc.sh
+.devcontainer/devcontainer.json
+.devcontainer/
+src/utils/
