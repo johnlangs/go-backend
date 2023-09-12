@@ -20,24 +20,20 @@
             }
 
             async function postKey() {
-                let key = document.getElementById('key').value;
-                let value = document.getElementById('value').value;
-                url = "http://localhost:3000/v1/" + key;
 
-                console.log(key);
-                console.log(value);
+                let key =  document.getElementById('postKey').value;
+                let value = document.getElementById('postValue').value;
+                let url = "http://localhost:3000/v1/" + key;
 
-                fetch('http://localhost:3000/v1/key-a', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'Hello, key-value store!'
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: value
                 });
 
-                console.log(res);
-
-                document.getElementById('post').textContent = res;
+                document.getElementById('post').textContent = "Posted!";
             }
         </script>
 
@@ -45,14 +41,10 @@
         <input type="submit" value="submit" onclick="getKey();" /> <br />
         <p id="get"></p>  
         
-        <form>
-            <label for="key">key:</label>
-            <input type="text" id="key" /><br />
-            <label for="value">value:</label>
-            <input type="text" id="value" /><br />
-            <input type="submit" value="submit" onclick="postKey();" />
-        </form> <br />
-        <p id="post"></p>  
+        <input type="text" id="postKey" />
+        <input type="text" id="postValue" />
+        <input type="submit" value="submit" onclick="postKey();" /> <br />
+        <p id="post"></p>
 
     </body>
 </html>
