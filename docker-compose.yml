@@ -4,16 +4,16 @@ services:
   server:
     build: .
     ports:
-      - "8080:8080"
+      - "3000:3000"
 
   postgres:
     image: postgres
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=
-      - POSTGRES_PASSWORD=
-      - POSTGRES_DB=
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=hunter2
+      - POSTGRES_DB=kvs
 
     # <HOSTNAME>
     container_name: postgres 
