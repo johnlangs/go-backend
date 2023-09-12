@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/handlers"	
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/pelletier/go-toml"
@@ -114,10 +115,15 @@ func main() {
 	r.HandleFunc("/v1/{key}", KeyValueDeleteHandler).Methods("DELETE")
 
 	
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "application/x-www-form-urlencoded", "Content-Type"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})	
+
+	
 	println("Service Started. Listening on " + port)
 	if port == ":443" {
 		log.Fatal(http.ListenAndServeTLS(port, "cert.pem", "key.pem", r))
 	} else {
-		log.Fatal(http.ListenAndServe(port, r))
+		log.Fatal(http.ListenAndServe(port, r), handlers.CORS(originsOk, headersOk, methodsOk)(r))
 	}
 }

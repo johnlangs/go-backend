@@ -8,7 +8,7 @@
         <script type="text/javascript">
             async function getKey() {
                 let key = document.getElementById('getKey').value;
-                url = "http://localhost:3000/v1/" + key;
+                url = "https://go-api.johnlangs.net/v1/" + key;
 
                 let res = await fetch(url, {
                     method: "GET",
@@ -23,7 +23,7 @@
 
                 let key =  document.getElementById('postKey').value;
                 let value = document.getElementById('postValue').value;
-                let url = "http://localhost:3000/v1/" + key;
+                let url = "https://go-api.johnlangs.net/v1/" + key;
 
                 fetch(url, {
                     method: 'PUT',
