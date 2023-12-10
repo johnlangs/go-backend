@@ -11,7 +11,7 @@ const getForm = document.getElementById('get-form')
 async function postKeyValue() {
     let key =  postKeyField.value;
     let value = postValueField.value;
-    let url = "https://go-api.johnlangs.net/v1/" + key;
+    let url = "https://go-api.johnlangs.dev/v1/" + key;
 
     console.log(key)
     console.log(value)
@@ -30,7 +30,7 @@ async function postKeyValue() {
 
 async function getKey() {
     let key =  postKeyField.value;
-    url = "https://go-api.johnlangs.net/v1/" + key;
+    url = "https://go-api.johnlangs.dev/v1/" + key;
 
     console.log(key)
     console.log(url)
