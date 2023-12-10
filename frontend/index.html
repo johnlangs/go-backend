@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="shortcut icon" href="" />
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="global.css">
+    <title>Key-value</title>
+  </head>
+  <body>
+        <h1>Key-value</h1>
+        <form class="card" id="post-form">
+            <h2>POST</h2>
+            <label for="post-key">Key</label>
+            <input type="text" id="post-key" name="post-key"/>
+            <label for="post-value">Value</label>
+            <input type="text" id="post-value" name="post-value"/>
+            <button type="button" id="post-key-value-button" onclick="postKeyValue()">Post key-value</button>
+            <output class="output" name="output-post" id="output-post" for="post-key post-value post-key-value-button output-post"></output>
+        </form> 
+        <form class="card" id="get-form">
+            <h2>GET</h2>
+            <label for="get-key">Key</label>
+            <input type="text" id="get-key" name="get-key"/>
+            <button id="get-key-value-button">Get key-value</button>
+            <output name="output-get" class="output" id="output-get" for="get-key output-post"></output>
+        </form> 
+        <script src="app.js"></script> 
+        <script>
+            if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' });
+            }
+        </script>    
+    </body>
+</html>
